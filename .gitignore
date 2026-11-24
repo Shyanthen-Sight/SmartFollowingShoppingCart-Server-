@@ -1,0 +1,32 @@
+# ===== 依赖 =====
+node_modules/
+
+# ===== 构建产物 =====
+dist/
+coverage/
+
+# ===== 日志 =====
+logs/
+*.log
+npm-debug.log*
+
+# ===== 环境变量 =====
+.env
+.env.*
+!.env.example
+
+# ===== 数据库数据卷（本地跑 MySQL 时若用 bind mount，数据不入库）=====
+mysql-data/
+redis-data/
+
+# ===== 编辑器 / 系统 =====
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 缓存 =====
+.eslintcache
+*.tsbuildinfo

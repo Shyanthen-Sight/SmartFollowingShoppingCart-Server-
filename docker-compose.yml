@@ -1,0 +1,43 @@
+# IFCServer 基础设施编排 —— MySQL + Redis + EMQX
+# 用法：docker compose up -d   （需要先安装 Docker Desktop / 服务器版 Docker）
+# 注意：本文件尚未实际运行验证过，首次启动后需逐项确认端口与数据卷。
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ifc-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请在 .env 中设置}
+      MYSQL_DATABASE: ifc
+      TZ: Asia/Shanghai
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:7
+    container_name: ifc-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    # 在线状态缓存，允许丢失，不开启持久化
+    command: redis-server --save "" --appendonly no
+
+  emqx:
+    image: emqx/emqx:5
+    container_name: ifc-emqx
+    restart: unless-stopped
+    ports:
+      - "1883:1883"    # MQTT TCP —— 车端直连
+      - "8083:8083"    # MQTT over WebSocket —— Web 调试用
+      - "8084:8084"    # MQTT over WSS —— 小程序（上线后需外层 TLS + 备案域名）
+      - "18083:18083"  # EMQX 管理控制台（默认 admin/public）
+    volumes:
+      - emqx-data:/opt/emqx/data
+
+volumes:
+  mysql-data:
+  emqx-data:
